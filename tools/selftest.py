@@ -367,8 +367,14 @@ def test_config_and_dirs(tmp):
         check("設定檔可指定輸出位置",
               app.PROCESSED_DIR == os.path.join(custom, "修改過的"), f"({app.PROCESSED_DIR})")
         check("_ensure_writable 對可寫路徑回 True", app._ensure_writable(custom))
+        # 用「檔案底下的子路徑」當作必定不可寫的目標。
+        # 不能用 /proc 之類的絕對路徑：Windows 會把它當成 C:\proc，
+        # 而一般使用者在 C 槽根目錄其實建得起來，測試會誤判。
+        blocker = os.path.join(tmp, "我是檔案不是資料夾.txt")
+        with open(blocker, "w", encoding="utf-8") as f:
+            f.write("x")
         check("_ensure_writable 對不可寫路徑回 False",
-              not app._ensure_writable("/proc/不可能建立的資料夾/x"))
+              not app._ensure_writable(os.path.join(blocker, "sub")))
     finally:
         app.APP_DIR = original_app_dir
         app.CONFIG = dict(app.DEFAULT_CONFIG)
