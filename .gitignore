@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 打包產物
+dist/
+build/build/
+*.egg-info/
+
+# 執行期產出
+tiltdot_config.json
+初始檔案/
+修改過的/
+*.xlsx
+!docs/**/*.xlsx
